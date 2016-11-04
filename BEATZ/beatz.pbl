@@ -1,4 +1,11 @@
 define Start (params) {
-    win <- MakeWindow('grey')
-    Draw()
+  red <- MakeColor("red")
+  bg <- MakeColor("grey")
+  font <- MakeFont("Vera.ttf",0,22,red, bg,1)
+  label <- MakeLabel("Welcome to BEATZ !", font)
+  win <- MakeWindow("grey")
+  AddObject(label,win)
+  Move(label, gVideoWidth/2,20)
+  Draw()
+  WaitForAnyKeyPress()
 }
