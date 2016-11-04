@@ -1,0 +1,4 @@
+define Start (params) {
+    win <- MakeWindow('grey')
+    Draw()
+}
