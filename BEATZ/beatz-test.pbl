@@ -1,0 +1,158 @@
+
+define Start (params) {
+
+	# globals
+	gVideoWidth <- 1440
+	gVideoHeight <- 900
+	gWindowCenterX <- gVideoWidth/2
+	gWindowCenterY <- gVideoHeight/2
+	gSleepEasy <- 1
+
+	#colors
+	gColorRed <- MakeColor("red")
+	gColorBlue <- MakeColor("blue")
+	gColorGreen <- MakeColor("green")
+	gColorWhite <- MakeColor("white")
+	gColorBlack <- MakeColor("black")
+
+	# text and fonts
+	gTextSize <- 18
+	gTextSizeBig <- 24
+	gFontWhite <- MakeFont(gPEBLBaseFont, 1, gTextSize, gColorWhite, gColorBlack, 0)
+	gFontWhiteBig <- MakeFont(gPEBLBaseFont, 1, gTextSizeBig, gColorWhite, gColorBlack, 0)
+	gFontResults <- MakeFont("VeraMono.ttf", 1, gTextSize, gColorWhite, gColorBlack, 0)
+
+	# symbols and stimuli
+	gSymbolSize <- 100
+	gReferenceStimuli <- Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorRed, 1)
+
+	gListOfStimuli <- [
+		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorGreen, 1),
+		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorRed, 1),
+		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorBlue, 1),
+		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorGreen, 1),
+		gReferenceStimuli,
+		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorBlue, 1)
+	]
+
+	gCORRECT_KEY <- "1"
+	gFALSE_KEY <- "2"
+
+  	gMaxWaitTime <- 1000
+  	gTimesToRepeatList <- 5
+
+  	#####
+  	# Main part of experiment
+  	#####
+
+    gWin <- MakeWindow("black")
+
+    # draws intro
+    DrawIntro()
+    WaitForKeyPress("<return>")
+
+	ShowReadyScreen()
+	Main(gTimesToRepeatList)
+
+	# quits the app
+	ShowEndScreen()
+	WaitForKeyPress("<esc>")
+}
+
+# shows the screen before experiment phase starts
+define ShowReadyScreen() {
+	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
+	label <- MakeLabel("Bist du bereit? (Drücke <ENTER>)", gFontWhiteBig)
+	Move(label, gWindowCenterX, gWindowCenterY)
+	AddObject(bg, gWin)
+	AddObject(label, gWin)
+	Draw()
+	WaitForKeyPress("<return>")
+}
+
+# shows the endscreen
+define ShowEndScreen() {
+	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
+	
+	resultWidth <- gVideoWidth / 1.5
+	resultHeight <- gVideoHeight / 1.2
+
+	endText <- "Zum Beenden bitte <ESC> drücken!"
+
+	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
+	label <- MakeLabel(endText, gFontWhiteBig)
+	Move(label, gWindowCenterX, gWindowCenterY)
+	AddObject(bg, gWin)
+	AddObject(label, gWin)
+	Draw()
+}
+
+define Main(times) {
+	# draw reference symbol
+	referencePosition <- gWindowCenterY - (gWindowCenterY * 0.75)
+	label <- MakeLabel("Referenzsymbol:", gFontWhite)
+	Move(label, gWindowCenterX, referencePosition - (gSymbolSize / 2) - gTextSize)
+	square <- Square(gWindowCenterX, referencePosition, gSymbolSize, gColorRed, 1)
+	AddObject(label, gWin)
+	AddObject(square, gWin)
+
+	# store results
+	responseTime <- []
+	accuracy <- []
+
+	# create randomized list with repeated items
+	stimuli <- Shuffle(RepeatList(gListOfStimuli, times))
+	
+	loop(i, stimuli) {
+		# draw
+		AddObject(i, gWin)
+		Draw()
+
+		# calculate time
+		start  <- GetTime()
+		# wait gMaxWaitTime for response
+		resp <- WaitForListKeyPressWithTimeout([gCORRECT_KEY, gFALSE_KEY], gMaxWaitTime, 1)
+		end <- GetTime()
+
+		# how long did it take?
+		responseTime <- Append(responseTime, (end - start))
+		
+		# was reference hit?
+		accuracy <- Append(accuracy, (IsSquare(i) and IsRed(i.color) and resp == gCORRECT_KEY) or (resp == gFALSE_KEY and not (IsSquare(i) and IsRed(i.color))))
+		
+		# delete current item from draw-call
+		RemoveObject(i, gWin)
+	}
+	return [responseTime, accuracy]
+}
+
+# is figure square
+define IsSquare(item) {
+	return item.name == gReferenceStimuli.name
+}
+
+# is color red?
+define IsRed(color) {
+	refColor <- gReferenceStimuli.color
+	return color.red == refColor.red and color.green == refColor.green and color.blue == refColor.blue and color.alpha == refColor.alpha
+}
+
+# draws the intro
+define DrawIntro() {
+	introTextWidth <- gVideoWidth / 2
+	introTextHeight <- gVideoHeight / 2
+    
+    introText <- "Willkommen!
+
+Dies ist ein audiovisuelles Experiment.
+
+- Drücke <" + gCORRECT_KEY + ">, wenn das Symbol der Referenz gleicht
+- Drücke <" + gFALSE_KEY + ">, wenn das Symbol und Referenz unterschiedlich sind
+
+Zum Starten des Experiments drücke <ENTER>"
+
+	text <- MakeTextBox(introText, gFontWhite, introTextWidth, introTextHeight)
+	AddObject(text, gWin)
+    Move(text, gWindowCenterX - introTextWidth / 2, gWindowCenterY - introTextHeight / 2)
+	Draw()
+}
