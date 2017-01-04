@@ -42,7 +42,7 @@ define Start (params) {
   	gFastSound <- LoadSound("fast.wav")
 
   	gMaxWaitTime <- 1000
-  	gTimesToRepeatList <- 2
+  	gTimesToRepeatList <- 5
 
   	#####
   	# Main part of experiment
@@ -124,15 +124,16 @@ rmax2 <- ToInteger(Max(responseSlow))
 rmax3 <- ToInteger(Max(responseReferenceFast))
 rmax4 <- ToInteger(Max(responseFast))
 
-responseText <- "
-
-Antwortzeiten in Millisekunden
-
+responseErg <- "
 Referenz (Langsam):  " + ToString(responseReferenceSlow) + "
 Langsam:             " + ToString(responseSlow) + "
 Referenz (Schnell):  " + ToString(responseReferenceFast) + "
 Schnell:             " + ToString(responseFast) + "
+"
 
+responseText <- "
+
+Antwortzeiten in Millisekunden
 |---------------------------------------------------------
 |  Durchlauf          | Durchschnitt / Standardabweichung
 |---------------------------------------------------------
@@ -165,15 +166,16 @@ aSD2 <- StdDev(responseSlow)
 aSD3 <- StdDev(responseReferenceFast)
 aSD4 <- StdDev(responseFast)
 
-accuracyText <- "
-
-Korrektheit der Antworten in Prozent
-
+accuracyErg <- "
 Referenz (Langsam):  " + ToString(accuracyReferenceSlow) + "
 Langsam:             " + ToString(accuracySlow) + "
 Referenz (Schnell):  " + ToString(accuracyReferenceFast) + "
 Schnell:             " + ToString(accuracyFast) + "
+"
 
+accuracyText <- "
+
+Korrektheit der Antworten in Prozent
 |---------------------------------------------------------
 |  Durchlauf          | Durchschnitt / Standardabweichung
 |---------------------------------------------------------
@@ -189,7 +191,7 @@ Zur nächsten Seite mit <ENTER>
 
 resultFile <- FileOpenWrite("results.txt")
 
-FilePrint(resultFile, responseText + accuracyText)
+FilePrint(resultFile, responseErg + responseText + accuracyErg + accuracyText)
 
 endText <- "Zum Beenden bitte <ESC> drücken!"
 
@@ -217,7 +219,7 @@ define PhaseA() {
 	gResultReferenceSlow <- Main(gTimesToRepeatList)
 	ShowReadyScreen()
 	PlayMusic("slow")
-	gResultSlow <- Main(gTimesToRepeatList)
+	gResultSlow <- Main(gTimesToRepeatList * 2)
 }
 
 # starts phase a -> see experiment plan
@@ -226,7 +228,7 @@ define PhaseB() {
 	gResultReferenceFast <- Main(gTimesToRepeatList)
 	ShowReadyScreen()
 	PlayMusic("fast")
-	gResultFast <- Main(gTimesToRepeatList)
+	gResultFast <- Main(gTimesToRepeatList * 2)
 }
 
 define PlayMusic(speed) {
