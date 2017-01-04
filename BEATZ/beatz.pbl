@@ -262,7 +262,7 @@ define Main(times) {
 		# calculate time
 		start  <- GetTime()
 		# wait gMaxWaitTime for response
-		resp <- WaitForListKeyPressWithTimeout([gCORRECT_KEY, gFALSE_KEY], gMaxWaitTime)
+		resp <- WaitForListKeyPressWithTimeout([gCORRECT_KEY, gFALSE_KEY], gMaxWaitTime, 1)
 		end <- GetTime()
 
 		# how long did it take?
