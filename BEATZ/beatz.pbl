@@ -48,8 +48,10 @@ define Start (params) {
   	# Main part of experiment
   	#####
 
+	
     gWin <- MakeWindow("black")
-
+	gSubNum <- GetSubNum(gWin)
+	
     # draws intro
     DrawIntro()
     WaitForKeyPress("<return>")
