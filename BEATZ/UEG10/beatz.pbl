@@ -25,22 +25,22 @@ define Start (params) {
 	# symbols and stimuli
 	gSymbolSize <- 100
 	gReferenceStimuli <- Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorRed, 1)
+	gReferenceTestStimuli <- Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize, gSymbolSize/2, gColorGreen, 1)
 
 	gListOfStimuli <- [
-		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorGreen, 1),
 		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorRed, 1),
-		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorBlue, 1),
 		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorGreen, 1),
 		gReferenceStimuli,
-		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorBlue, 1)
+		Rectangle(gWindowCenterX, gWindowCenterY, gSymbolSize,gSymbolSize/2, gColorBlue, 1),
+		Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize/2,gSymbolSize, gColorBlue, 1)
 	]
 
-	gCORRECT_KEY <- "1"
-	gFALSE_KEY <- "2"
+	gCORRECT_KEY <- " "
 
 	gSlowSound <- LoadSound("slow.wav")
   	gFastSound <- LoadSound("fast.wav")
 
+	gWaitTime <- 150
   	gMaxWaitTime <- 1000
   	gTimesToRepeatList <- 5
 
@@ -56,12 +56,22 @@ define Start (params) {
     DrawIntro()
     WaitForKeyPress("<return>")
 
+	#test
+	Test()
+	ShowExperimentScreen()
+	
+	
 	# main experiment
 	DetermineGroup(RandomDiscrete(2))
 
 	# quits the app
 	ShowEndScreen()
 	WaitForKeyPress("<esc>")
+}
+
+define Test() {
+	ShowReadyScreen()
+	Main(3, gListOfStimuli,gReferenceTestStimuli)
 }
 
 # randomize phases
@@ -74,6 +84,16 @@ define DetermineGroup(number) {
 		PhaseA()
 	}
 	
+}
+
+define ShowExperimentScreen(){
+	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
+	label <- MakeLabel("Experiment startet jetzt? (Drücke <ENTER>)", gFontWhiteBig)
+	Move(label, gWindowCenterX, gWindowCenterY)
+	AddObject(bg, gWin)
+	AddObject(label, gWin)
+	Draw()
+	WaitForKeyPress("<return>")
 }
 
 # shows the screen before experiment phase starts
@@ -191,7 +211,7 @@ Zur nächsten Seite mit <ENTER>
 
 "
 
-resultFile <- FileOpenWrite("results.txt")
+resultFile <- FileOpenWrite("results/results_" + gSubNum + ".txt")
 
 FilePrint(resultFile, responseErg + responseText + accuracyErg + accuracyText)
 
@@ -212,25 +232,24 @@ endText <- "Zum Beenden bitte <ESC> drücken!"
 	AddObject(bg, gWin)
 	AddObject(label, gWin)
 	Draw()
-	Draw()
 }
 
 # starts phase a -> see experiment plan
 define PhaseA() {
 	ShowReadyScreen()
-	gResultReferenceSlow <- Main(gTimesToRepeatList)
+	gResultReferenceSlow <- Main(gTimesToRepeatList, gListOfStimuli,gReferenceStimuli)
 	ShowReadyScreen()
 	PlayMusic("slow")
-	gResultSlow <- Main(gTimesToRepeatList * 2)
+	gResultSlow <- Main(gTimesToRepeatList * 2, gListOfStimuli,gReferenceStimuli)
 }
 
 # starts phase a -> see experiment plan
 define PhaseB() {
 	ShowReadyScreen()
-	gResultReferenceFast <- Main(gTimesToRepeatList)
+	gResultReferenceFast <- Main(gTimesToRepeatList, gListOfStimuli,gReferenceStimuli)
 	ShowReadyScreen()
 	PlayMusic("fast")
-	gResultFast <- Main(gTimesToRepeatList * 2)
+	gResultFast <- Main(gTimesToRepeatList * 2, gListOfStimuli,gReferenceStimuli)
 }
 
 define PlayMusic(speed) {
@@ -242,7 +261,7 @@ define PlayMusic(speed) {
 	}
 }
 
-define Main(times) {
+define Main(times, list, reference) {
 	# draw reference symbol
 	referencePosition <- gWindowCenterY - (gWindowCenterY * 0.75)
 	label <- MakeLabel("Referenzsymbol:", gFontWhite)
@@ -256,7 +275,7 @@ define Main(times) {
 	accuracy <- []
 
 	# create randomized list with repeated items
-	stimuli <- Shuffle(RepeatList(gListOfStimuli, times))
+	stimuli <- Shuffle(RepeatList(list, times))
 	
 	loop(i, stimuli) {
 		# draw
@@ -266,29 +285,31 @@ define Main(times) {
 		# calculate time
 		start  <- GetTime()
 		# wait gMaxWaitTime for response
-		resp <- WaitForListKeyPressWithTimeout([gCORRECT_KEY, gFALSE_KEY], gMaxWaitTime, 1)
+		resp <- WaitForListKeyPressWithTimeout([gCORRECT_KEY], gMaxWaitTime, 1)
 		end <- GetTime()
 
 		# how long did it take?
 		responseTime <- Append(responseTime, (end - start))
 		
 		# was reference hit?
-		accuracy <- Append(accuracy, (IsSquare(i) and IsRed(i.color) and resp == gCORRECT_KEY) or (resp == gFALSE_KEY and not (IsSquare(i) and IsRed(i.color))))
+		accuracy <- Append(accuracy, (IsSquare(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY))
 		
 		# delete current item from draw-call
 		RemoveObject(i, gWin)
+		Draw()
+		Wait(gWaitTime)
 	}
 	return [responseTime, accuracy]
 }
 
 # is figure square
-define IsSquare(item) {
-	return item.name == gReferenceStimuli.name
+define IsSquare(item,reference) {
+	return item.name == reference.name
 }
 
 # is color red?
-define IsRed(color) {
-	refColor <- gReferenceStimuli.color
+define IsRed(color,reference) {
+	refColor <- reference.color
 	return color.red == refColor.red and color.green == refColor.green and color.blue == refColor.blue and color.alpha == refColor.alpha
 }
 
@@ -301,8 +322,8 @@ define DrawIntro() {
 
 Dies ist ein audiovisuelles Experiment.
 
-- Drücke <" + gCORRECT_KEY + ">, wenn das Symbol der Referenz gleicht
-- Drücke <" + gFALSE_KEY + ">, wenn das Symbol und Referenz unterschiedlich sind
+- Drücke <Leertaste>, wenn das Symbol der Referenz gleicht
+
 
 Zum Starten des Experiments drücke <ENTER>"
 
