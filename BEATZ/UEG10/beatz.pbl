@@ -37,6 +37,7 @@ define Start (params) {
 
 	gCORRECT_KEY <- " "
 
+	gTestSound <- LoadSound("test.wav")
 	gSlowSound <- LoadSound("slow.wav")
   	gFastSound <- LoadSound("fast.wav")
 
@@ -48,7 +49,6 @@ define Start (params) {
   	# Main part of experiment
   	#####
 
-	
     gWin <- MakeWindow("black")
 	gSubNum <- GetSubNum(gWin)
 	
@@ -60,7 +60,6 @@ define Start (params) {
 	Test()
 	ShowExperimentScreen()
 	
-	
 	# main experiment
 	DetermineGroup(RandomDiscrete(2))
 
@@ -71,6 +70,7 @@ define Start (params) {
 
 define Test() {
 	ShowReadyScreen()
+	PlayMusic("test")
 	Main(3, gListOfStimuli,gReferenceTestStimuli)
 }
 
@@ -83,15 +83,22 @@ define DetermineGroup(number) {
 		PhaseB()
 		PhaseA()
 	}
-	
 }
 
 define ShowExperimentScreen(){
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
-	label <- MakeLabel("Experiment startet jetzt? (Drücke <ENTER>)", gFontWhiteBig)
-	Move(label, gWindowCenterX, gWindowCenterY)
+	readyText <- "
+Testlauf abgeschlossen.
+
+Wurde das Prinzip verstanden?
+War die Musik über die Kopfhörer hörbar?
+
+Zum Fortfahren bitte <ENTER> drücken.
+	"
+	text <- MakeTextBox(readyText, gFontWhite, gVideoWidth/2, gVideoHeight/2)
 	AddObject(bg, gWin)
-	AddObject(label, gWin)
+	AddObject(text, gWin)
+	Move(text, gWindowCenterX - gVideoWidth/2, gWindowCenterY - gVideoHeight/2)
 	Draw()
 	WaitForKeyPress("<return>")
 }
@@ -99,7 +106,7 @@ define ShowExperimentScreen(){
 # shows the screen before experiment phase starts
 define ShowReadyScreen() {
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
-	label <- MakeLabel("Bist du bereit? (Drücke <ENTER>)", gFontWhiteBig)
+	label <- MakeLabel("Platziere eine Hand auf der <Leertaste> und starte mit drücken von <ENTER>", gFontWhiteBig)
 	Move(label, gWindowCenterX, gWindowCenterY)
 	AddObject(bg, gWin)
 	AddObject(label, gWin)
@@ -217,15 +224,15 @@ FilePrint(resultFile, responseErg + responseText + accuracyErg + accuracyText)
 
 endText <- "Zum Beenden bitte <ESC> drücken!"
 
-	textBox <- MakeTextBox(responseText, gFontResults, resultWidth, resultHeight)
-	AddObject(bg, gWin)
-	AddObject(textBox, gWin)
-    Move(textBox, gWindowCenterX - resultWidth / 2, gWindowCenterY - resultHeight / 2)
-	Draw()
-	WaitForKeyPress("<return>")
-	SetText(textBox, accuracyText)
-	Draw()
-	WaitForKeyPress("<return>")
+	#textBox <- MakeTextBox(responseText, gFontResults, resultWidth, resultHeight)
+	#AddObject(bg, gWin)
+	#AddObject(textBox, gWin)
+    #Move(textBox, gWindowCenterX - resultWidth / 2, gWindowCenterY - resultHeight / 2)
+	#Draw()
+	#WaitForKeyPress("<return>")
+	#SetText(textBox, accuracyText)
+	#Draw()
+	#WaitForKeyPress("<return>")
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
 	label <- MakeLabel(endText, gFontWhiteBig)
 	Move(label, gWindowCenterX, gWindowCenterY)
@@ -259,6 +266,9 @@ define PlayMusic(speed) {
 	if (speed == "slow") {
 		PlayBackground(gFastSound)
 	}
+	if (speed == "test") {
+		PlayBackground(gTestSound)
+	} 
 }
 
 define Main(times, list, reference) {
@@ -322,10 +332,15 @@ define DrawIntro() {
 
 Dies ist ein audiovisuelles Experiment.
 
-- Drücke <Leertaste>, wenn das Symbol der Referenz gleicht
+Schritt 1: Bitte setze die Kopfhörer auf
+Schritt 2: Testlauf
+Schritt 3: Experiment
 
+Erklärung:
+Im oberen Teil des Bildschirms wird ein Referenzsymbol erscheinen.
+Drücke die <Leertaste>, sobald das Symbol in der Mitte dem Referenzsymbol entspricht.
 
-Zum Starten des Experiments drücke <ENTER>"
+Zum Starten des Testlaufs drücke <ENTER>"
 
 	text <- MakeTextBox(introText, gFontWhite, introTextWidth, introTextHeight)
 	AddObject(text, gWin)
