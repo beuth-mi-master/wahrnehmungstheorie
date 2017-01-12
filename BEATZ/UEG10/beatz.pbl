@@ -80,9 +80,11 @@ define Test() {
 # randomize phases
 define DetermineGroup(number) {
 	if (number == 1) {
+		gPhase <- "slow-fast"
 		PhaseA()
 		PhaseB()
 	} else {
+		gPhase <- "fast-slow"
 		PhaseB()
 		PhaseA()
 	}
@@ -139,7 +141,7 @@ define ShowEndScreen() {
   		header <- header + "v" + i + ";"
   		i <- i + 1
   	}
-	header <- header + "FALSE;MEAN;STDDEV;MIN;MAX"
+	header <- header + "FALSE;MEAN;STDDEV"
 
 	slowref <- "slowref;"
 	slow <- "slow;"
@@ -182,18 +184,18 @@ define ShowEndScreen() {
   		i <- i + 1
   	}
 
-
-  	slowref <- slowref + Nth(gResultReferenceSlow, 2) + ";" + Mean(Nth(gResultReferenceSlow, 1)) + ";" + StdDev(Nth(gResultReferenceSlow, 1)) + ";" + Min(Nth(gResultReferenceSlow, 1)) + ";" + Max(Nth(gResultReferenceSlow, 1))
-  	slow <- slow + Nth(gResultSlow, 2) + ";" + Mean(Nth(gResultSlow, 1)) + ";" + StdDev(Nth(gResultSlow, 1)) + ";" + Min(Nth(gResultSlow, 1)) + ";" + Max(Nth(gResultSlow, 1))
-  	fastref <- fastref + Nth(gResultReferenceFast, 2) + ";" + Mean(Nth(gResultReferenceFast, 1)) + ";" + StdDev(Nth(gResultReferenceFast, 1)) + ";" + Min(Nth(gResultReferenceFast, 1)) + ";" + Max(Nth(gResultReferenceFast, 1))
-  	fast <- fast + Nth(gResultFast, 2) + ";" + Mean(Nth(gResultFast, 1)) + ";" + StdDev(Nth(gResultFast, 1)) + ";" + Min(Nth(gResultFast, 1)) + ";" + Max(Nth(gResultFast, 1))
+  	slowref <- slowref + Nth(gResultReferenceSlow, 2) + ";" + Mean(Nth(gResultReferenceSlow, 1)) + ";" + StdDev(Nth(gResultReferenceSlow, 1))
+  	slow <- slow + Nth(gResultSlow, 2) + ";" + Mean(Nth(gResultSlow, 1)) + ";" + StdDev(Nth(gResultSlow, 1))
+  	fastref <- fastref + Nth(gResultReferenceFast, 2) + ";" + Mean(Nth(gResultReferenceFast, 1)) + ";" + StdDev(Nth(gResultReferenceFast, 1))
+  	fast <- fast + Nth(gResultFast, 2) + ";" + Mean(Nth(gResultFast, 1)) + ";" + StdDev(Nth(gResultFast, 1))
 
 
 responseErg <- header + "
 " + slowref + "
 " + slow + "
 " + fastref + "
-" + fast
+" + fast + "
+" + "Reihenfolge:;" + gPhase
 
 resultFile <- FileOpenWrite("results/results_" + gSubNum + ".csv")
 
