@@ -46,7 +46,7 @@ define Start (params) {
 
 	gWaitTime <- 150
   	gMaxWaitTime <- 1000
-  	gTimesToRepeatList <- 6
+  	gTimesToRepeatList <- 5
 
   	#####
   	# Main part of experiment
@@ -94,8 +94,10 @@ define ShowExperimentScreen(){
 	readyText <- "
 Testlauf abgeschlossen.
 
-Wurde das Prinzip verstanden?
-War die Musik über die Kopfhörer hörbar?
+- Wurde das Prinzip verstanden?
+- War die Musik über die Kopfhörer hörbar?
+
+Falls nicht, melde dich bitte beim Versuchsleiter.
 
 Zum Fortfahren bitte <ENTER> drücken.
 	"
@@ -124,119 +126,74 @@ define ShowEndScreen() {
 	resultWidth <- gVideoWidth / 1.5
 	resultHeight <- gVideoHeight / 1.2
 
-	responseReferenceSlow <- Nth(gResultReferenceSlow, 1)
-	accuracyReferenceSlow <- Nth(gResultReferenceSlow, 2)
+	maxSize <- [
+		Length(gResultReferenceSlow),
+		Length(gResultSlow),
+		Length(gResultReferenceFast),
+		Length(gResultFast)
+	]
 
-	responseSlow <- Nth(gResultSlow, 1)
-	accuracySlow <- Nth(gResultSlow, 2)
+	header <- "name;"
+	i <- 1
+  	while (i <= Max(maxSize)) {
+  		header <- header + "v" + i + ";"
+  		i <- i + 1
+  	}
+	header <- header + "FALSE;MEAN;STDEV;MIN;MAX"
 
-	responseReferenceFast <- Nth(gResultReferenceFast, 1)
-	accuracyReferenceFast <- Nth(gResultReferenceFast, 2)
+	slowref <- "slowref;"
+	slow <- "slow;"
+	fastref <- "fastref;"
+	fast <- "fast;"
 
-	responseFast <- Nth(gResultFast, 1)
-	accuracyFast <- Nth(gResultFast, 2)
+	loop(item, Nth(gResultReferenceSlow, 1)) {
+    	slowref <- slowref + item + ";"
+  	}
 
-	
-r1 <- ToInteger(Mean(responseReferenceSlow))
-r2 <- ToInteger(Mean(responseSlow))
-r3 <- ToInteger(Mean(responseReferenceFast))
-r4 <- ToInteger(Mean(responseFast))
+  	loop(item, Nth(gResultSlow, 1)) {
+    	slow <- slow + item + ";"
+  	}
 
-rSD1 <- StdDev(responseReferenceSlow)
-rSD2 <- StdDev(responseSlow)
-rSD3 <- StdDev(responseReferenceFast)
-rSD4 <- StdDev(responseFast)
+  	loop(item, Nth(gResultReferenceFast, 1)) {
+    	fastref <- fastref + item + ";"
+  	}
 
-rmin1 <- ToInteger(Min(responseReferenceSlow))
-rmin2 <- ToInteger(Min(responseSlow))
-rmin3 <- ToInteger(Min(responseReferenceFast))
-rmin4 <- ToInteger(Min(responseFast))
+  	loop(item, Nth(gResultFast, 1)) {
+    	fast <- fast + item + ";"
+  	}
 
-rmax1 <- ToInteger(Max(responseReferenceSlow))
-rmax2 <- ToInteger(Max(responseSlow))
-rmax3 <- ToInteger(Max(responseReferenceFast))
-rmax4 <- ToInteger(Max(responseFast))
 
-responseErg <- "
-Referenz (Langsam):  " + ToString(responseReferenceSlow) + "
-Langsam:             " + ToString(responseSlow) + "
-Referenz (Schnell):  " + ToString(responseReferenceFast) + "
-Schnell:             " + ToString(responseFast) + "
-"
+  	j <- 1
+  	while (j < Length(gResultReferenceSlow)) {
+  		slowref <- slowref + ";"
+  		j <- j + 1
+  	}
 
-responseText <- "
+  	slowref <- slowref + Nth(gResultReferenceSlow, 2) + ";" + Mean(Nth(gResultReferenceSlow, 1)) + ";" + StdDev(Nth(gResultReferenceSlow, 1)) + ";" + Min(Nth(gResultReferenceSlow, 1)) + ";" + Max(Nth(gResultReferenceSlow, 1))
+  	slow <- slow + Nth(gResultSlow, 2) + ";" + Mean(Nth(gResultSlow, 1)) + ";" + StdDev(Nth(gResultSlow, 1)) + ";" + Min(Nth(gResultSlow, 1)) + ";" + Max(Nth(gResultSlow, 1))
 
-Antwortzeiten in Millisekunden
-|---------------------------------------------------------
-|  Durchlauf          | Durchschnitt / Standardabweichung
-|---------------------------------------------------------
-|  Referenz (Langsam) | " + r1 + "ms / " + rSD1 + "
-|  Langsam            | " + r2 + "ms / " + rSD2 + "
-|  Referenz (Schnell) | " + r3 + "ms / " + rSD3 + "
-|  Schnell            | " + r4 + "ms / " + rSD4 + "
-|---------------------------------------------------------
+  	k <- 1
+  	while (k < Length(gResultReferenceFast)) {
+  		fastref <- fastref + ";"
+  		k <- k + 1
+  	}
+  	fastref <- fastref + Nth(gResultReferenceFast, 2) + ";" + Mean(Nth(gResultReferenceFast, 1)) + ";" + StdDev(Nth(gResultReferenceFast, 1)) + ";" + Min(Nth(gResultReferenceFast, 1)) + ";" + Max(Nth(gResultReferenceFast, 1))
+  	
 
-|-----------------------------------
-|  Durchlauf          | Min / Max
-|-----------------------------------
-|  Referenz (Langsam) | " + rmin1 + "ms / " + rmax1 + "ms
-|  Langsam            | " + rmin2 + "ms / " + rmax2 + "ms
-|  Referenz (Schnell) | " + rmin3 + "ms / " + rmax3 + "ms
-|  Schnell            | " + rmin4 + "ms / " + rmax4 + "ms
-|-----------------------------------
+  	fast <- fast + Nth(gResultFast, 2) + ";" + Mean(Nth(gResultFast, 1)) + ";" + StdDev(Nth(gResultFast, 1)) + ";" + Min(Nth(gResultFast, 1)) + ";" + Max(Nth(gResultFast, 1))
 
-Zur nächsten Seite mit <ENTER>
 
-"
+responseErg <- header + "
+" + slowref + "
+" + slow + "
+" + fastref + "
+" + fast
 
-a1 <- ToInteger(Mean(accuracyReferenceSlow) * 10000) / 100
-a2 <- ToInteger(Mean(accuracySlow) * 10000) / 100
-a3 <- ToInteger(Mean(accuracyReferenceFast) * 10000) / 100
-a4 <- ToInteger(Mean(accuracyFast) * 10000) / 100
+resultFile <- FileOpenWrite("results/results_" + gSubNum + ".csv")
 
-aSD1 <- StdDev(responseReferenceSlow)
-aSD2 <- StdDev(responseSlow)
-aSD3 <- StdDev(responseReferenceFast)
-aSD4 <- StdDev(responseFast)
-
-accuracyErg <- "
-Referenz (Langsam):  " + ToString(accuracyReferenceSlow) + "
-Langsam:             " + ToString(accuracySlow) + "
-Referenz (Schnell):  " + ToString(accuracyReferenceFast) + "
-Schnell:             " + ToString(accuracyFast) + "
-"
-
-accuracyText <- "
-
-Korrektheit der Antworten in Prozent
-|---------------------------------------------------------
-|  Durchlauf          | Durchschnitt / Standardabweichung
-|---------------------------------------------------------
-|  Referenz (Langsam) | " + a1 + "% / " + aSD1 + "
-|  Langsam            | " + a2 + "% / " + aSD2 + "
-|  Referenz (Schnell) | " + a3 + "% / " + aSD3 + "
-|  Schnell            | " + a4 + "% / " + aSD4 + "
-|---------------------------------------------------------
-
-Zur nächsten Seite mit <ENTER>
-
-"
-
-resultFile <- FileOpenWrite("results/results_" + gSubNum + ".txt")
-
-FilePrint(resultFile, responseErg + responseText + accuracyErg + accuracyText)
+FilePrint(resultFile, responseErg)
 
 endText <- "Zum Beenden bitte <ESC> drücken!"
-
-	#textBox <- MakeTextBox(responseText, gFontResults, resultWidth, resultHeight)
-	#AddObject(bg, gWin)
-	#AddObject(textBox, gWin)
-    #Move(textBox, gWindowCenterX - resultWidth / 2, gWindowCenterY - resultHeight / 2)
-	#Draw()
-	#WaitForKeyPress("<return>")
-	#SetText(textBox, accuracyText)
-	#Draw()
-	#WaitForKeyPress("<return>")
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
 	label <- MakeLabel(endText, gFontWhiteBig)
 	Move(label, gWindowCenterX, gWindowCenterY)
@@ -287,11 +244,11 @@ define Main(times, list, reference) {
 
 	# store results
 	responseTime <- []
-	accuracy <- []
+	wrong <- 0
 
 	# create randomized list with repeated items
 	stimuli <- Shuffle(RepeatList(list, times))
-	
+
 	loop(i, stimuli) {
 		# draw
 		AddObject(i, gWin)
@@ -304,17 +261,18 @@ define Main(times, list, reference) {
 		end <- GetTime()
 
 		# how long did it take?
-		responseTime <- Append(responseTime, (end - start))
-		
-		# was reference hit?
-		accuracy <- Append(accuracy, (IsForm(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY))
+		if (IsForm(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY) {
+			responseTime <- Append(responseTime, (end - start))
+		} else {
+			wrong <- wrong + 1
+		}
 		
 		# delete current item from draw-call
 		RemoveObject(i, gWin)
 		Draw()
 		Wait(gWaitTime)
 	}
-	return [responseTime, accuracy]
+	return [responseTime, wrong]
 }
 
 # is figure defined form
