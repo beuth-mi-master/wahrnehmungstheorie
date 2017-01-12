@@ -80,11 +80,11 @@ define Test() {
 # randomize phases
 define DetermineGroup(number) {
 	if (number == 1) {
-		gPhase <- "slow-fast"
+		gPhase <- "fast-slow"
 		PhaseA()
 		PhaseB()
 	} else {
-		gPhase <- "fast-slow"
+		gPhase <- "slow-fast"
 		PhaseB()
 		PhaseA()
 	}
@@ -271,7 +271,8 @@ define Main(times, list, reference) {
 		# how long did it take?
 		if (IsForm(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY) {
 			responseTime <- Append(responseTime, (end - start))
-		} else {
+		} 
+		if (not(IsForm(i,reference) and IsRed(i.color,reference)) and resp == gCORRECT_KEY) {
 			wrong <- wrong + 1
 		}
 		
