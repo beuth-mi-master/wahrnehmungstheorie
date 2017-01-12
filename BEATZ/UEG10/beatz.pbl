@@ -1,6 +1,12 @@
 
 define Start (params) {
 
+	if (IsString(Nth(params, 1))) {
+		gResultPath <- Nth(params, 1)
+	} else {
+		gResultPath <- ""
+	}
+
 	# globals
 	gVideoWidth <- 1440
 	gVideoHeight <- 900
@@ -197,7 +203,7 @@ responseErg <- header + "
 " + fast + "
 " + "Reihenfolge:;" + gPhase
 
-resultFile <- FileOpenWrite("results/results_" + gSubNum + ".csv")
+resultFile <- FileOpenWrite(gResultPath + "results/results_" + gSubNum + ".csv")
 
 FilePrint(resultFile, responseErg)
 
