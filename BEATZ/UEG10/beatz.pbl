@@ -86,6 +86,7 @@ define DetermineGroup(number) {
 }
 
 define ShowExperimentScreen(){
+	Stop(gTestSound)
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
 	readyText <- "
 Testlauf abgeschlossen.
@@ -248,6 +249,7 @@ define PhaseA() {
 	ShowReadyScreen()
 	PlayMusic("slow")
 	gResultSlow <- Main(gTimesToRepeatList * 2, gListOfStimuli,gReferenceStimuli)
+	Stop(gSlowSound)
 }
 
 # starts phase a -> see experiment plan
@@ -257,6 +259,7 @@ define PhaseB() {
 	ShowReadyScreen()
 	PlayMusic("fast")
 	gResultFast <- Main(gTimesToRepeatList * 2, gListOfStimuli,gReferenceStimuli)
+	Stop(gFastSound)
 }
 
 define PlayMusic(speed) {
