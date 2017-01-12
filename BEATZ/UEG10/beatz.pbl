@@ -22,16 +22,19 @@ define Start (params) {
 	gFontWhiteBig <- MakeFont(gPEBLBaseFont, 1, gTextSizeBig, gColorWhite, gColorBlack, 0)
 	gFontResults <- MakeFont("VeraMono.ttf", 1, gTextSize, gColorWhite, gColorBlack, 0)
 
+	gReferencePosition <- gWindowCenterY - (gWindowCenterY * 0.75)
+
 	# symbols and stimuli
 	gSymbolSize <- 100
-	gReferenceStimuli <- Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorRed, 1)
-	gReferenceTestStimuli <- Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize, gSymbolSize/2, gColorGreen, 1)
+	gReferenceStimuli <- Square(gWindowCenterX, gReferencePosition, gSymbolSize, gColorRed, 1)
+	gReferenceTestStimuli <- Circle(gWindowCenterX, gReferencePosition, gSymbolSize/2, gColorBlue, 1)
 
 	gListOfStimuli <- [
 		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorRed, 1),
+		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorBlue, 1),
 		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorGreen, 1),
-		gReferenceStimuli,
-		Rectangle(gWindowCenterX, gWindowCenterY, gSymbolSize,gSymbolSize/2, gColorBlue, 1),
+		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorRed, 1),
+		Rectangle(gWindowCenterX, gWindowCenterY, gSymbolSize, gSymbolSize/2, gColorBlue, 1),
 		Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize/2,gSymbolSize, gColorBlue, 1)
 	]
 
@@ -43,7 +46,7 @@ define Start (params) {
 
 	gWaitTime <- 150
   	gMaxWaitTime <- 1000
-  	gTimesToRepeatList <- 5
+  	gTimesToRepeatList <- 6
 
   	#####
   	# Main part of experiment
@@ -71,7 +74,7 @@ define Start (params) {
 define Test() {
 	ShowReadyScreen()
 	PlayMusic("test")
-	Main(3, gListOfStimuli,gReferenceTestStimuli)
+	Main(gTimesToRepeatList, gListOfStimuli, gReferenceTestStimuli)
 }
 
 # randomize phases
@@ -96,10 +99,10 @@ War die Musik über die Kopfhörer hörbar?
 
 Zum Fortfahren bitte <ENTER> drücken.
 	"
-	text <- MakeTextBox(readyText, gFontWhite, gVideoWidth/2, gVideoHeight/2)
+	text <- MakeTextBox(readyText, gFontWhite, gVideoWidth/3, gVideoHeight/4)
 	AddObject(bg, gWin)
 	AddObject(text, gWin)
-	Move(text, gWindowCenterX - gVideoWidth/2, gWindowCenterY - gVideoHeight/2)
+	Move(text, gWindowCenterX - (gVideoWidth/3) / 2, gWindowCenterY - (gVideoHeight/4) / 2)
 	Draw()
 	WaitForKeyPress("<return>")
 }
@@ -276,12 +279,11 @@ define PlayMusic(speed) {
 
 define Main(times, list, reference) {
 	# draw reference symbol
-	referencePosition <- gWindowCenterY - (gWindowCenterY * 0.75)
 	label <- MakeLabel("Referenzsymbol:", gFontWhite)
-	Move(label, gWindowCenterX, referencePosition - (gSymbolSize / 2) - gTextSize)
-	square <- Square(gWindowCenterX, referencePosition, gSymbolSize, gColorRed, 1)
+	Move(label, gWindowCenterX, gReferencePosition - (gSymbolSize / 2) - gTextSize)
+	ref <- reference
 	AddObject(label, gWin)
-	AddObject(square, gWin)
+	AddObject(ref, gWin)
 
 	# store results
 	responseTime <- []
@@ -305,7 +307,7 @@ define Main(times, list, reference) {
 		responseTime <- Append(responseTime, (end - start))
 		
 		# was reference hit?
-		accuracy <- Append(accuracy, (IsSquare(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY))
+		accuracy <- Append(accuracy, (IsForm(i,reference) and IsRed(i.color,reference) and resp == gCORRECT_KEY))
 		
 		# delete current item from draw-call
 		RemoveObject(i, gWin)
@@ -315,8 +317,8 @@ define Main(times, list, reference) {
 	return [responseTime, accuracy]
 }
 
-# is figure square
-define IsSquare(item,reference) {
+# is figure defined form
+define IsForm(item,reference) {
 	return item.name == reference.name
 }
 
