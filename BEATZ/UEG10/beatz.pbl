@@ -127,10 +127,10 @@ define ShowEndScreen() {
 	resultHeight <- gVideoHeight / 1.2
 
 	maxSize <- [
-		Length(gResultReferenceSlow),
-		Length(gResultSlow),
-		Length(gResultReferenceFast),
-		Length(gResultFast)
+		Length(Nth(gResultReferenceSlow, 1)),
+		Length(Nth(gResultSlow, 1)),
+		Length(Nth(gResultReferenceFast, 1)),
+		Length(Nth(gResultFast, 1))
 	]
 
 	header <- "name;"
@@ -139,7 +139,7 @@ define ShowEndScreen() {
   		header <- header + "v" + i + ";"
   		i <- i + 1
   	}
-	header <- header + "FALSE;MEAN;STDEV;MIN;MAX"
+	header <- header + "FALSE;MEAN;STDDEV;MIN;MAX"
 
 	slowref <- "slowref;"
 	slow <- "slow;"
@@ -149,37 +149,43 @@ define ShowEndScreen() {
 	loop(item, Nth(gResultReferenceSlow, 1)) {
     	slowref <- slowref + item + ";"
   	}
+  	i <- 1
+  	while (i <= Max(maxSize) - Length(Nth(gResultReferenceSlow, 1))) {
+  		slowref <- slowref + ";"
+  		i <- i + 1
+  	}
 
   	loop(item, Nth(gResultSlow, 1)) {
     	slow <- slow + item + ";"
+  	}
+  	i <- 1
+  	while (i <= Max(maxSize) - Length(Nth(gResultSlow, 1))) {
+  		slow <- slow + ";"
+  		i <- i + 1
   	}
 
   	loop(item, Nth(gResultReferenceFast, 1)) {
     	fastref <- fastref + item + ";"
   	}
+  	i <- 1
+  	while (i <= Max(maxSize) - Length(Nth(gResultReferenceFast, 1))) {
+  		fastref <- fastref + ";"
+  		i <- i + 1
+  	}
 
   	loop(item, Nth(gResultFast, 1)) {
     	fast <- fast + item + ";"
   	}
-
-
-  	j <- 1
-  	while (j < Length(gResultReferenceSlow)) {
-  		slowref <- slowref + ";"
-  		j <- j + 1
+  	i <- 1
+  	while (i <= Max(maxSize) - Length(Nth(gResultFast, 1))) {
+  		fast <- fast + ";"
+  		i <- i + 1
   	}
+
 
   	slowref <- slowref + Nth(gResultReferenceSlow, 2) + ";" + Mean(Nth(gResultReferenceSlow, 1)) + ";" + StdDev(Nth(gResultReferenceSlow, 1)) + ";" + Min(Nth(gResultReferenceSlow, 1)) + ";" + Max(Nth(gResultReferenceSlow, 1))
   	slow <- slow + Nth(gResultSlow, 2) + ";" + Mean(Nth(gResultSlow, 1)) + ";" + StdDev(Nth(gResultSlow, 1)) + ";" + Min(Nth(gResultSlow, 1)) + ";" + Max(Nth(gResultSlow, 1))
-
-  	k <- 1
-  	while (k < Length(gResultReferenceFast)) {
-  		fastref <- fastref + ";"
-  		k <- k + 1
-  	}
   	fastref <- fastref + Nth(gResultReferenceFast, 2) + ";" + Mean(Nth(gResultReferenceFast, 1)) + ";" + StdDev(Nth(gResultReferenceFast, 1)) + ";" + Min(Nth(gResultReferenceFast, 1)) + ";" + Max(Nth(gResultReferenceFast, 1))
-  	
-
   	fast <- fast + Nth(gResultFast, 2) + ";" + Mean(Nth(gResultFast, 1)) + ";" + StdDev(Nth(gResultFast, 1)) + ";" + Min(Nth(gResultFast, 1)) + ";" + Max(Nth(gResultFast, 1))
 
 
