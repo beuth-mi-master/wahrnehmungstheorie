@@ -43,6 +43,12 @@ define Start (params) {
 		Rectangle(gWindowCenterX, gWindowCenterY, gSymbolSize, gSymbolSize/2, gColorBlue, 1),
 		Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize/2,gSymbolSize, gColorBlue, 1)
 	]
+	
+	gTestListOfStimuli <- [
+		Circle(gWindowCenterX, gWindowCenterY, gSymbolSize/2, gColorBlue, 1),
+		Square(gWindowCenterX, gWindowCenterY, gSymbolSize, gColorRed, 1),
+		Ellipse(gWindowCenterX, gWindowCenterY, gSymbolSize/2,gSymbolSize, gColorGreen, 1)
+	]
 
 	gCORRECT_KEY <- " "
 
@@ -80,7 +86,7 @@ define Start (params) {
 define Test() {
 	ShowReadyScreen()
 	PlayMusic("test")
-	Main(gTimesToRepeatList, gListOfStimuli, gReferenceTestStimuli)
+	Main(gTimesToRepeatList, gTestListOfStimuli, gReferenceTestStimuli)
 }
 
 # randomize phases
@@ -308,7 +314,9 @@ define DrawIntro() {
     
     introText <- "Willkommen!
 
-Dies ist ein audiovisuelles Experiment.
+Dies ist ein audiovisuelles Aufmerksamkeitsexperiment.
+
+Konzentriere dich, es geht um Reaktionszeiten!
 
 Schritt 1: Bitte setze die Kopfhörer auf
 Schritt 2: Testlauf
