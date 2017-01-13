@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\PEBL\bin\pebl" -v "AG10/" .\AG10\beatz.pbl --windowed
