@@ -8,8 +8,8 @@ define Start (params) {
 	}
 
 	# globals
-	gVideoWidth <- 1440
-	gVideoHeight <- 900
+	gVideoWidth <- 1920
+	gVideoHeight <- 1200
 	gWindowCenterX <- gVideoWidth/2
 	gWindowCenterY <- gVideoHeight/2
 	gSleepEasy <- 1
@@ -103,7 +103,7 @@ define ShowExperimentScreen(){
 Testlauf abgeschlossen.
 
 - Wurde das Prinzip verstanden?
-- War die Musik über die Kopfhörer hörbar?
+- War Audio über die Kopfhörer hörbar?
 
 Falls nicht, melde dich bitte beim Versuchsleiter.
 
@@ -207,7 +207,7 @@ resultFile <- FileOpenWrite(gResultPath + "results/results_" + gSubNum + ".csv")
 
 FilePrint(resultFile, responseErg)
 
-endText <- "Zum Beenden bitte <ESC> drücken!"
+endText <- "Vielen Dank für deine Teilnahme. Zum Beenden <ESC> drücken"
 	bg <- Rectangle(gWindowCenterX, gWindowCenterY, gVideoWidth, gVideoHeight, gColorBlack, 1)
 	label <- MakeLabel(endText, gFontWhiteBig)
 	Move(label, gWindowCenterX, gWindowCenterY)
@@ -317,6 +317,8 @@ Schritt 3: Experiment
 Erklärung:
 Im oberen Teil des Bildschirms wird ein Referenzsymbol erscheinen.
 Drücke die <Leertaste>, sobald das Symbol in der Mitte dem Referenzsymbol entspricht.
+
+In manchen Abschnitten wird kein Ton abgespielt.
 
 Zum Starten des Testlaufs drücke <ENTER>"
 
