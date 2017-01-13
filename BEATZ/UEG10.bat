@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\PEBL\bin\pebl" -v "UEG10/" .\UEG10\beatz.pbl --windowed
